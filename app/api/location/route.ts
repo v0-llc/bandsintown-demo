@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Force dynamic rendering since we use request headers
+export const dynamic = 'force-dynamic';
+
 // Test location objects for development/testing
 const TEST_LOCATIONS = {
   savannah: {
@@ -32,9 +35,8 @@ export async function GET(request: NextRequest) {
     const realIp = request.headers.get('x-real-ip');
     const ip = forwarded?.split(',')[0] || realIp || request.ip || '';
 
-    // If we're in development or can't get IP, use Savannah, GA as default
+    // If we're in development or can't get IP, use default location from TEST_LOCATIONS
     if (!ip || ip === '::1' || ip === '127.0.0.1') {
-      // In development, return Savannah, GA coordinates
       // You can change TEST_LOCATIONS.savannah to TEST_LOCATIONS.hamburg or TEST_LOCATIONS.sydney for testing
       return NextResponse.json({ 
         ...TEST_LOCATIONS.hamburg,
