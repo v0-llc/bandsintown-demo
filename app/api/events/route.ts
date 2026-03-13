@@ -257,8 +257,37 @@ const stubEvents = [
   }
 ];
 
+const ARTIST_ID = '11902160'; // Postmodern Jukebox artist ID
+
 export async function GET() {
-  // Return stubbed data matching Bandsintown API response structure
+  const appId = process.env.BANDSINTOWN_APP_ID;
+  
+  // If API key is set and not the placeholder, use real API
+  if (appId && appId !== 'your_api_key_here') {
+    try {
+      const response = await fetch(
+        `https://rest.bandsintown.com/artists/id_${ARTIST_ID}/events?app_id=${appId}`,
+        {
+          headers: {
+            'Accept': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Bandsintown API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return NextResponse.json(data);
+    } catch (error) {
+      console.error('Error fetching events from API:', error);
+      // Fall back to stubbed data on error
+      return NextResponse.json(stubEvents);
+    }
+  }
+  
+  // Return stubbed data if no API key is configured
   return NextResponse.json(stubEvents);
 }
 
