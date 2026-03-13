@@ -28,6 +28,7 @@ interface UserLocation {
   country: string | null;
   latitude: number | null;
   longitude: number | null;
+  isDefault?: boolean;
 }
 
 export default function Home() {
@@ -108,6 +109,7 @@ export default function Home() {
             country: location.country,
             latitude: lat,
             longitude: lon,
+            isDefault: location.isDefault || false,
           });
         }
       }
@@ -419,18 +421,25 @@ export default function Home() {
             </div>
             {userLocation && (userLocation.city || userLocation.region || userLocation.country) && (
               <div className="flex items-center gap-2">
-                <p className="text-sm text-gray-500">
-                  {(() => {
-                    const parts = [];
-                    if (userLocation.city) parts.push(userLocation.city);
-                    // Only add region if it's different from city
-                    if (userLocation.region && userLocation.region !== userLocation.city) {
-                      parts.push(userLocation.region);
-                    }
-                    if (userLocation.country) parts.push(userLocation.country);
-                    return parts.join(', ');
-                  })()}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className={`text-sm ${userLocation.isDefault ? 'text-amber-600 font-medium' : 'text-gray-500'}`}>
+                    {(() => {
+                      const parts = [];
+                      if (userLocation.city) parts.push(userLocation.city);
+                      // Only add region if it's different from city
+                      if (userLocation.region && userLocation.region !== userLocation.city) {
+                        parts.push(userLocation.region);
+                      }
+                      if (userLocation.country) parts.push(userLocation.country);
+                      return parts.join(', ');
+                    })()}
+                  </p>
+                  {userLocation.isDefault && (
+                    <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded font-medium">
+                      Demo Location
+                    </span>
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={() => setUserLocation(null)}
